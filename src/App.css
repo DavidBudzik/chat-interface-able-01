@@ -1,0 +1,116 @@
+.app-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: var(--color-background-default);
+  box-shadow: var(--shadow-default);
+  min-height: 100vh;
+  min-width: 320px;
+}
+
+.app-container--table-sidebar-open {
+  overflow-x: hidden;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  align-items: center;
+  overflow-y: auto;
+  padding: calc(50vh - 200px) var(--spacing-5) var(--spacing-7);
+  transition: all var(--transition-slow);
+  min-width: 0;
+  position: relative;
+}
+
+.main-content--chat-started {
+  padding: 0;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.main-content--chat-started.main-content--table-sidebar-open {
+  align-items: flex-start;
+}
+
+.main-content--table-sidebar-open {
+  margin-right: 66.67%;
+  transition: margin-right var(--transition-slow);
+}
+
+@media (max-width: 1440px) {
+  .main-content--table-sidebar-open {
+    margin-right: 66.67%;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .main-content {
+    padding: var(--spacing-5);
+  }
+  
+  .main-content--chat-started {
+    padding: 0;
+  }
+}
+
+.chat-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-7);
+  align-items: center;
+  transition: all var(--transition-slow);
+  width: 100%;
+  max-width: 740px;
+}
+
+.chat-box--centered {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0;
+  gap: 0;
+  align-items: stretch;
+  justify-content: flex-start;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Responsive chat box */
+@media (max-width: 768px) {
+  .chat-box {
+    max-width: 100%;
+    gap: var(--spacing-5);
+  }
+  
+  .chat-box--centered {
+    padding: 0 var(--spacing-4);
+  }
+}
+
+.dev-reset-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  background: var(--color-cta-default);
+  color: white;
+  border: none;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  transition: background 0.2s;
+}
+
+.dev-reset-button:hover {
+  background: #c72f00;
+}

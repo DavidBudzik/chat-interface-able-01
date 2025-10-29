@@ -1,0 +1,55 @@
+.suggestion-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+  align-items: center;
+  padding: var(--spacing-7) var(--spacing-7) 0;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  background: var(--color-background-default);
+  justify-content: center;
+}
+
+.suggestion-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-3) var(--spacing-5);
+  background: var(--color-surface-hover);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-family: var(--font-family);
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-20);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.suggestion-chip:focus {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.suggestion-chip:hover {
+  border-color: var(--color-cta-default);
+  background: var(--color-surface-hover);
+}
+
+.suggestion-chip:active {
+  transform: scale(0.98);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .suggestion-chips {
+    gap: var(--spacing-2);
+  }
+  
+  .suggestion-chip {
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--font-size-12);
+  }
+}

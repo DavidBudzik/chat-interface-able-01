@@ -1,0 +1,131 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn var(--transition-normal);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  background: var(--color-background-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: slideUp var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal--sm {
+  width: 400px;
+}
+
+.modal--md {
+  width: 600px;
+}
+
+.modal--lg {
+  width: 800px;
+}
+
+.modal--xl {
+  width: 1000px;
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-6) var(--spacing-7);
+  border-bottom: 1px solid var(--color-border-default);
+  flex-shrink: 0;
+}
+
+.modal__title {
+  font-family: var(--font-family);
+  font-size: var(--font-size-20);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-28);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.modal__close-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-icon-default);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.modal__close-button:hover {
+  background: var(--color-surface-input-default);
+  color: var(--color-text-primary);
+}
+
+.modal__close-button:focus {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.modal__content {
+  padding: var(--spacing-7);
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .modal {
+    width: 95vw;
+    max-height: 95vh;
+    margin: var(--spacing-4);
+  }
+  
+  .modal__header {
+    padding: var(--spacing-5);
+  }
+  
+  .modal__content {
+    padding: var(--spacing-5);
+  }
+  
+  .modal__title {
+    font-size: var(--font-size-18);
+  }
+}

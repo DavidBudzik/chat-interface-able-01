@@ -1,0 +1,112 @@
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-9);
+  width: 100%;
+  padding: 0;
+  align-items: center;
+  flex: 1;
+  overflow-y: auto;
+  justify-content: center;
+}
+
+.chat-message {
+  display: flex;
+  gap: var(--spacing-3);
+  align-items: flex-end;
+  width: 100%;
+  max-width: 640px;
+  padding: 0 var(--spacing-7);
+}
+
+.chat-message--user {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+.chat-message--assistant {
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.chat-message__content {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.chat-message--user .chat-message__content {
+  max-width: none;
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.chat-message--user .chat-message__bubble {
+  max-width: 85%;
+}
+
+.chat-message__bubble {
+  background: var(--color-surface-muted);
+  border-radius: var(--spacing-1);
+  padding: var(--spacing-3) var(--spacing-4);
+  word-wrap: break-word;
+  border: 1px solid var(--color-border-default);
+}
+
+.chat-message__bubble p {
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-24);
+  color: var(--color-text-primary);
+}
+
+.chat-message--assistant .chat-message__content {
+  color: var(--color-text-primary);
+}
+
+.chat-message--assistant .chat-message__content p {
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-24);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .chat-messages {
+    gap: var(--spacing-5);
+  }
+  
+  .chat-message__content {
+    max-width: 85%;
+  }
+  
+  .chat-message__text {
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-14);
+  }
+}
+
+.chat-message__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: #4ab8f7;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.chat-message__avatar-initials {
+  font-family: var(--font-family);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  line-height: 20px;
+  color: var(--color-text-on-dark);
+}
+
+
