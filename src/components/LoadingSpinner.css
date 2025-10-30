@@ -3,7 +3,7 @@
   width: 20px;
   height: 20px;
   border: 2px solid var(--color-border-default);
-  border-radius: 50%;
+  border-radius: 0px;
   border-top-color: var(--color-cta-default);
   animation: spin 1s ease-in-out infinite;
 }
@@ -35,7 +35,7 @@
 .loading-dots__dot {
   width: 6px;
   height: 6px;
-  border-radius: 50%;
+  border-radius: 0px;
   background: var(--color-cta-default);
   animation: bounce 1.4s ease-in-out infinite both;
 }

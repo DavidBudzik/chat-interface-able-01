@@ -54,19 +54,6 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (chatBoxRef.current && !chatBoxRef.current.contains(event.target as Node)) {
-        setShowOptions(null);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
   const handleOptionSelect = (option: string) => {
     setInputValue(option);
     setShowOptions(null);
@@ -123,6 +110,12 @@ function App() {
     setTableSidebarOpen(false);
   };
 
+  const handleClearMessages = () => {
+    setMessages([]);
+    setInputValue('');
+    setIsThinking(false);
+  };
+
   const handleBackToHome = () => {
     setHasStartedChat(false);
     setSidebarOpen(true);
@@ -165,9 +158,10 @@ function App() {
         isOpen={sidebarOpen} 
         onToggle={() => setSidebarOpen(!sidebarOpen)}
         onWatchVideo={handleOpenTutorial}
+        onResetTutorial={import.meta.env.DEV ? handleResetTutorial : undefined}
       />
       
-      <main className={`main-content ${hasStartedChat ? 'main-content--chat-started' : ''} ${tableSidebarOpen ? 'main-content--table-sidebar-open' : ''}`}>
+      <main className={`main-content ${hasStartedChat ? 'main-content--chat-started' : ''} ${tableSidebarOpen ? 'main-content--table-sidebar-open' : ''} ${sidebarOpen ? 'main-content--sidebar-expanded' : ''}`}>
         {hasStartedChat ? (
           <ChatBoxContainer
             inputValue={inputValue}
@@ -176,7 +170,7 @@ function App() {
             disabled={!inputValue.trim() || isThinking}
             messages={messages}
             onHomeClick={handleBackToHome}
-            onClearChat={handleChatReset}
+            onClearChat={handleClearMessages}
             isThinking={isThinking}
             onOpenList={() => setTableSidebarOpen(true)}
             tableSidebarOpen={tableSidebarOpen}
@@ -213,19 +207,9 @@ function App() {
         isOpen={tableSidebarOpen}
         onClose={() => setTableSidebarOpen(false)}
         isLoading={isThinking}
-        isEmpty={true}
+        isEmpty={false}
       />
       
-      {/* Developer Reset Button - Only shows in development */}
-      {import.meta.env.DEV && (
-        <button
-          className="dev-reset-button"
-          onClick={handleResetTutorial}
-          aria-label="Reset tutorial for testing"
-        >
-          🔄 Reset Tutorial
-        </button>
-      )}
     </div>
   );
 }

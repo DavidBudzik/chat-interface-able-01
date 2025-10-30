@@ -7,6 +7,7 @@
   box-shadow: var(--shadow-default);
   min-height: 100vh;
   min-width: 320px;
+  position: relative;
 }
 
 .app-container--table-sidebar-open {
@@ -24,12 +25,22 @@
   transition: all var(--transition-slow);
   min-width: 0;
   position: relative;
+  margin-left: 60px; /* Account for collapsed sidebar */
+  width: calc(100% - 60px);
+  --sidebar-width: 60px;
 }
 
 .main-content--chat-started {
   padding: 0;
   justify-content: flex-start;
   align-items: center;
+}
+
+/* When sidebar is expanded */
+.main-content--sidebar-expanded {
+  margin-left: 305px;
+  width: calc(100% - 305px);
+  --sidebar-width: 305px;
 }
 
 .main-content--chat-started.main-content--table-sidebar-open {
@@ -51,10 +62,21 @@
 @media (max-width: 768px) {
   .main-content {
     padding: var(--spacing-5);
+    margin-left: 0;
+    width: 100%;
+  }
+  
+  .main-content--sidebar-expanded {
+    margin-left: 0;
+    width: 100%;
   }
   
   .main-content--chat-started {
     padding: 0;
+  }
+  
+  .chat-box {
+    max-width: 100%;
   }
 }
 
@@ -65,7 +87,7 @@
   align-items: center;
   transition: all var(--transition-slow);
   width: 100%;
-  max-width: 740px;
+  max-width: min(740px, calc(100vw - var(--sidebar-width, 60px) - 40px)); /* Responsive max-width accounting for sidebar */
 }
 
 .chat-box--centered {
@@ -101,7 +123,7 @@
   background: var(--color-cta-default);
   color: white;
   border: none;
-  border-radius: var(--radius-xs);
+  border-radius: 0px;
   cursor: pointer;
   font-size: var(--font-size-12);
   font-weight: var(--font-weight-semibold);

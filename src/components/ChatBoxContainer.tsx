@@ -1,7 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { Home, ChevronDown, X, Users, Copy, RotateCcw, List, Menu, Plus } from 'lucide-react';
+import { ChevronDown, X, Users, Copy, RotateCcw, List, Plus } from 'lucide-react';
+import infoIcon from '../assets/icons/Info.svg';
 import { ThinkingLoader } from './ThinkingLoader';
 import ableLogoIcon from '../assets/able-logo-icon.png';
+import editIcon from '../assets/icons/Edit.svg';
+import moveToFolderIcon from '../assets/icons/Move to folder.svg';
+import chevronLeftIcon from '../assets/icons/Arrow left.svg';
 import './ChatBoxContainer.css';
 
 interface ChatBoxContainerProps {
@@ -22,26 +26,14 @@ interface ChatBoxContainerProps {
   tableSidebarOpen?: boolean;
 }
 
-function IconPlatformMenu({ onClick }: { onClick?: () => void }) {
+function IconArrowLeft({ onClick }: { onClick?: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="chat-box-container__menu-icon"
-      aria-label="Menu"
+      className="chat-box-container__arrow-left-icon"
+      aria-label="Back"
     >
-      <Menu size={24} />
-    </button>
-  );
-}
-
-function IconPlatformHome({ onClick }: { onClick?: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className="chat-box-container__home-icon"
-      aria-label="Home"
-    >
-      <Home size={24} />
+      <img src={chevronLeftIcon} alt="Back" className="chat-box-container__arrow-left-icon-img" />
     </button>
   );
 }
@@ -62,21 +54,38 @@ function ActionBar({
   onHomeClick, 
   onChevronClick,
   chevronRef,
+  menuRef,
   menuOpen,
-  onClearChat
+  onClearChat,
+  onCloseMenu
 }: { 
   onHomeClick: () => void;
   onChevronClick: () => void;
   chevronRef: React.RefObject<HTMLButtonElement>;
+  menuRef: React.RefObject<HTMLDivElement>;
   menuOpen: boolean;
   onClearChat?: () => void;
+  onCloseMenu?: () => void;
 }) {
+  const handleClearMessages = () => {
+    onClearChat?.();
+  };
+
+  const handleRename = () => {
+    // TODO: Implement rename functionality
+    onCloseMenu?.();
+  };
+
+  const handleMoveToFolder = () => {
+    // TODO: Implement move to folder functionality
+    onCloseMenu?.();
+  };
+
   return (
     <div className="chat-box-container__action-bar">
       <div className="chat-box-container__action-bar-content">
         <div className="chat-box-container__breadcrumb">
-          <IconPlatformMenu onClick={() => {}} />
-          <IconPlatformHome onClick={onHomeClick} />
+          <IconArrowLeft onClick={onHomeClick} />
           <span className="chat-box-container__separator">/</span>
           <div className="chat-box-container__dropdown-container">
             <button 
@@ -87,21 +96,39 @@ function ActionBar({
               <span className="chat-box-container__research-name">New Research</span>
               <IconBasicChevronDown onClick={onChevronClick} />
             </button>
+            {/* Info tooltip */}
+            <div className="chat-box-container__info">
+              <img src={infoIcon} alt="Asset info" className="chat-box-container__info-icon" />
+              <div className="chat-box-container__info-tooltip" role="tooltip">
+                <div className="chat-box-container__info-tooltip-title">Asset Information:</div>
+                <div className="chat-box-container__info-tooltip-line">- Entity Type: company_list</div>
+                <div className="chat-box-container__info-tooltip-line">- Entity ID: 19124</div>
+              </div>
+            </div>
             {menuOpen && (
-              <div className="chat-box-container__dropdown">
-                <div className="chat-box-container__dropdown-item">Rename</div>
-                <div className="chat-box-container__dropdown-item">Move to folder</div>
+              <div ref={menuRef} className="chat-box-container__dropdown">
+                <div className="chat-box-container__dropdown-item" onClick={handleRename}>
+                  <img src={editIcon} alt="Edit" className="chat-box-container__dropdown-icon" />
+                  <span>Rename</span>
+                </div>
+                <div className="chat-box-container__dropdown-item" onClick={handleMoveToFolder}>
+                  <img src={moveToFolderIcon} alt="Move to folder" className="chat-box-container__dropdown-icon" />
+                  <span>Move to folder</span>
+                </div>
               </div>
             )}
           </div>
         </div>
-        <button 
-          className="chat-box-container__add-button" 
-          aria-label="Add"
-          onClick={() => {}}
-        >
-          <Plus size={20} />
-        </button>
+        <div className="chat-box-container__add-button-wrapper">
+          <button 
+            className="chat-box-container__add-button" 
+            aria-label="Start new chat"
+            onClick={handleClearMessages}
+          >
+            <Plus size={24} />
+          </button>
+          <span className="chat-box-container__tooltip">Start new chat</span>
+        </div>
       </div>
     </div>
   );
@@ -194,7 +221,7 @@ function AIMessage({
               onClick={onOpenList}
               aria-label="Open list"
             >
-              <List size={16} />
+              <List size={24} />
               <span>Open list</span>
             </button>
           )}
@@ -203,7 +230,7 @@ function AIMessage({
             onClick={handleCopy}
             aria-label={copied ? "Copied!" : "Copy message"}
           >
-            <Copy size={16} />
+            <Copy size={24} />
             <span>{copied ? 'Copied!' : 'Copy'}</span>
           </button>
           {onRegenerate && (
@@ -212,7 +239,7 @@ function AIMessage({
               onClick={onRegenerate}
               aria-label="Regenerate response"
             >
-              <RotateCcw size={16} />
+              <RotateCcw size={24} />
               <span>Regenerate</span>
             </button>
           )}
@@ -308,8 +335,10 @@ export default function ChatBoxContainer({
         onHomeClick={handleHomeClick}
         onChevronClick={handleChevronClick}
         chevronRef={chevronRef}
+        menuRef={menuRef}
         menuOpen={menuOpen}
         onClearChat={handleClearChat}
+        onCloseMenu={() => setMenuOpen(false)}
       />
       
       <div className="chat-box-container__messages">

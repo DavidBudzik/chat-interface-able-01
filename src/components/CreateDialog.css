@@ -1,0 +1,129 @@
+/* Create Dialog Styles - Matching Figma Design */
+.create-dialog {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.create-dialog-modal .modal {
+  box-shadow: 0px 10px 24px 0px rgba(35, 35, 35, 0.15);
+}
+
+.create-dialog__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-7);
+  height: 96px;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--spacing-10) var(--spacing-10);
+  padding-top: var(--spacing-10);
+  padding-bottom: var(--spacing-5);
+}
+
+.create-dialog__title {
+  font-family: 'Helvetica Neue LT Pro', 'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: var(--font-size-24);
+  font-weight: 300;
+  line-height: var(--line-height-32);
+  color: var(--color-text-primary);
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.create-dialog__form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-5) var(--spacing-10);
+  width: 100%;
+}
+
+.create-dialog__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  flex: 1;
+  min-width: 0;
+}
+
+.create-dialog__label {
+  font-family: var(--font-family);
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-24);
+  color: var(--color-text-primary);
+}
+
+.create-dialog__input {
+  padding: var(--spacing-3);
+  gap: var(--spacing-3);
+  border: 1px solid #b8b8b8;
+  border-radius: 0px;
+  font-family: var(--font-family);
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-24);
+  color: var(--color-text-primary);
+  background: var(--color-surface-input-default);
+  transition: border-color var(--transition-fast);
+  width: 100%;
+  box-sizing: border-box;
+  cursor: text;
+}
+
+.create-dialog__input:focus {
+  outline: none;
+  border-color: var(--color-border-hover);
+}
+
+.create-dialog__input::placeholder {
+  color: var(--color-text-subtle);
+}
+
+.create-dialog__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-7) var(--spacing-10) var(--spacing-10);
+}
+
+.create-dialog__button {
+  display: flex;
+  gap: var(--spacing-3);
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3) var(--spacing-4);
+  border: none;
+  border-radius: 0px;
+  font-family: var(--font-family);
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-24);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.create-dialog__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.create-dialog__button--tertiary {
+  background: var(--color-background-default);
+  color: var(--color-text-primary);
+}
+
+.create-dialog__button--tertiary:hover:not(:disabled) {
+  opacity: 0.7;
+}
+
+.create-dialog__button--primary {
+  background: #232323;
+  color: var(--color-text-on-dark);
+}
+
+.create-dialog__button--primary:hover:not(:disabled) {
+  background: #000000;
+}
+

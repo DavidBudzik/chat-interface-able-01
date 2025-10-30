@@ -21,47 +21,37 @@
 }
 
 .tw-body {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* 50% image, 50% text */
-  gap: var(--spacing-7);
-  align-items: stretch;
+  display: flex;
+  height: 484px;
   color: var(--color-text-on-dark);
-  min-height: 400px;
 }
 
 .tw-image {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--color-surface-muted);
-  border: 1px solid var(--color-border-default);
-  border-radius: var(--radius-sm);
-  min-height: 400px;
+  flex: 1;
+  background: #474747;
   height: 100%;
 }
 
 .tw-image img {
-  width: 140px;
-  height: 140px;
-  object-fit: contain;
-  opacity: 0.8;
+  display: none;
 }
 
 .tw-text {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4);
-  color: var(--color-text-on-dark);
-  justify-content: center;
+  gap: var(--spacing-7);
+  background: var(--color-background-inverted);
+  padding: var(--spacing-10);
   height: 100%;
 }
 
 .tw-step-title {
   margin: 0;
   font-family: var(--font-family);
-  font-size: var(--font-size-20);
-  line-height: var(--line-height-28);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-24);
+  line-height: var(--line-height-32);
+  font-weight: var(--font-weight-regular);
   color: var(--color-text-on-dark);
 }
 
@@ -70,45 +60,83 @@
   font-family: var(--font-family);
   font-size: var(--font-size-14);
   line-height: var(--line-height-24);
-  color: rgba(255, 255, 255, 0.7); /* light grey on dark */
-  flex: 1;
-  display: flex;
-  align-items: center;
+  color: var(--color-text-on-dark);
+  font-weight: var(--font-weight-regular);
 }
 
 .tw-read-more {
   align-self: flex-start;
-  padding: var(--spacing-3) var(--spacing-5);
+  padding: var(--spacing-3) var(--spacing-4);
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: var(--radius-xs);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0px;
   cursor: pointer;
   color: var(--color-text-on-dark);
-}
-
-
-
-.tw-dots {
+  font-family: var(--font-family);
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-24);
+  transition: all 0.2s;
   display: flex;
-  gap: var(--spacing-2);
-  position: absolute;
-  bottom: var(--spacing-5);
-  left: 50%;
-  transform: translateX(-50%);
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-3);
 }
 
-.tw-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: var(--radius-full);
-  background: var(--color-border-default);
-  border: none;
+.tw-read-more:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Dark mode button styles for TutorialWalkthrough */
+.tutorial-walkthrough-modal .video-tutorial__skip-button {
+  padding: var(--spacing-3) var(--spacing-4);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0px;
+  color: white;
+  font-family: var(--font-family);
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-24);
   cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-3);
 }
 
-.tw-dot--active {
-  background: var(--color-cta-default);
+.tutorial-walkthrough-modal .video-tutorial__skip-button:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
 }
+
+.tutorial-walkthrough-modal .video-tutorial__back-button {
+  padding: var(--spacing-3) var(--spacing-4);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0px;
+  color: white;
+  font-family: var(--font-family);
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-24);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-3);
+}
+
+.tutorial-walkthrough-modal .video-tutorial__back-button:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+
+
 
 .tw-actions {
   display: flex;
@@ -120,7 +148,7 @@
   padding: var(--spacing-3) var(--spacing-6);
   border: 1px solid var(--color-border-default);
   background: var(--color-surface-default);
-  border-radius: var(--radius-xs);
+  border-radius: 0px;
   cursor: pointer;
 }
 
@@ -129,19 +157,22 @@
   border: none;
   background: var(--color-cta-default);
   color: var(--color-text-on-dark);
-  border-radius: var(--radius-xs);
+  border-radius: 0px;
   cursor: pointer;
 }
 
 @media (max-width: 768px) {
   .tw-modal { padding: var(--spacing-5); }
   .tw-body { 
-    grid-template-columns: 1fr; 
-    min-height: 300px;
+    flex-direction: column;
+    height: auto;
   }
   .tw-image { 
     height: 200px; 
     min-height: 200px;
+  }
+  .tw-text {
+    padding: var(--spacing-7);
   }
 }
 

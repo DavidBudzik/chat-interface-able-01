@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import type { KeyboardEvent, MouseEvent } from 'react';
-import { Send } from 'lucide-react';
+import sendIcon from '../assets/icons/Send.svg';
 import { LoadingSpinner } from './LoadingSpinner';
 import './ChatInput.css';
 
@@ -158,7 +158,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           {isLoading ? (
             <LoadingSpinner size="small" />
           ) : (
-            <Send size={20} />
+            <img src={sendIcon} alt="Send" className="chat-input__send-icon" />
           )}
         </button>
       </div>

@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { X, Play } from 'lucide-react';
+import closeIcon from '../assets/icons/Close.svg';
+import playIcon from '../assets/icons/play.svg';
 import thinkingVideo from '../assets/thinking-video.mp4';
 import './VideoTutorial.css';
 
@@ -34,13 +35,15 @@ export const VideoTutorial: React.FC<VideoTutorialProps> = ({ isOpen, onClose, o
       role="dialog" aria-modal="true"
     >
       <div className="video-tutorial-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="video-tutorial__close" onClick={onClose} aria-label="Close tutorial">
-          <X size={24} />
-        </button>
         
         <div className="video-tutorial__content">
           <div className="video-tutorial__header">
-            <h2 className="video-tutorial__title">Welcome to Able</h2>
+            <div className="video-tutorial__header-row">
+              <h2 className="video-tutorial__title">Welcome to Able</h2>
+              <button className="video-tutorial__close-inline" onClick={onClose} aria-label="Close tutorial">
+                <img src={closeIcon} alt="Close" className="video-tutorial__icon" />
+              </button>
+            </div>
             <p className="video-tutorial__subtitle">Learn how to get started in 2 minutes</p>
           </div>
 
@@ -68,7 +71,7 @@ export const VideoTutorial: React.FC<VideoTutorialProps> = ({ isOpen, onClose, o
                   aria-label="Play video"
                   onClick={() => videoRef.current?.play()}
                 >
-                  <Play size={48} fill="white" />
+                  <img src={playIcon} alt="Play" className="video-tutorial__play-icon" />
                 </button>
                 <div className="video-tutorial__video-info">
                   <span className="video-tutorial__duration">2:30</span>
@@ -81,9 +84,14 @@ export const VideoTutorial: React.FC<VideoTutorialProps> = ({ isOpen, onClose, o
             <button className="video-tutorial__skip-button" onClick={onClose}>
               Skip tutorial
             </button>
-            <button className="video-tutorial__start-button" onClick={onStart || onClose}>
-              Get started
-            </button>
+            <div className="video-tutorial__nav-buttons">
+              <button className="video-tutorial__back-button video-tutorial__back-button--hidden" onClick={() => {}}>
+                Back
+              </button>
+              <button className="video-tutorial__start-button" onClick={onStart || onClose}>
+                Get the tour
+              </button>
+            </div>
           </div>
         </div>
       </div>

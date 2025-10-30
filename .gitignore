@@ -37,3 +37,6 @@ coverage/
 # Misc
 *.local
 *.tmp
+
+# Local snapshot (ignore embedded repo)
+.yoyo/

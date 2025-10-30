@@ -48,27 +48,29 @@ export const TutorialWalkthrough: React.FC<TutorialWalkthroughProps> = ({ isOpen
   if (!isOpen) return null;
 
   const goNext = () => setStepIndex((i) => Math.min(STEPS.length - 1, i + 1));
+  const goBack = () => setStepIndex((i) => Math.max(0, i - 1));
   const goTo = (i: number) => setStepIndex(i);
 
   const step = STEPS[stepIndex];
 
   return (
     <div className="video-tutorial-overlay" onClick={onClose} role="dialog" aria-modal="true">
-      <div className="video-tutorial-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="video-tutorial__close" onClick={onClose} aria-label="Close tutorial">
-          <X size={24} />
-        </button>
+      <div className="video-tutorial-modal tutorial-walkthrough-modal" onClick={(e) => e.stopPropagation()}>
 
         <div className="video-tutorial__content">
           <div className="video-tutorial__header">
-            <h2 className="video-tutorial__title">Quick start</h2>
+            <div className="video-tutorial__header-row">
+              <h2 className="video-tutorial__title">Welcome to Able</h2>
+              <button className="video-tutorial__close-inline" onClick={onClose} aria-label="Close tutorial">
+                <X size={24} />
+              </button>
+            </div>
             <p className="video-tutorial__subtitle">Four simple steps to get productive</p>
           </div>
 
           <div className="video-tutorial__video-container">
             <div className="tw-body">
               <div className="tw-image">
-                <img src={step.imageSrc} alt="Step" />
               </div>
               <div className="tw-text">
                 <h4 className="tw-step-title">{step.title}</h4>
@@ -76,25 +78,20 @@ export const TutorialWalkthrough: React.FC<TutorialWalkthroughProps> = ({ isOpen
                 <button className="tw-read-more" onClick={() => window.open(step.ctaHref || '#', '_blank')}>Read more</button>
               </div>
             </div>
-
-            <div className="tw-dots" role="tablist" aria-label="Tutorial steps">
-              {STEPS.map((_, i) => (
-                <button
-                  key={i}
-                  className={`tw-dot ${i === stepIndex ? 'tw-dot--active' : ''}`}
-                  onClick={() => goTo(i)}
-                  aria-label={`Go to step ${i + 1}`}
-                  role="tab"
-                />
-              ))}
-            </div>
           </div>
 
           <div className="video-tutorial__footer">
             <button className="video-tutorial__skip-button" onClick={onClose}>Skip tutorial</button>
-            <button className="video-tutorial__start-button" onClick={stepIndex === STEPS.length - 1 ? onClose : goNext}>
-              {stepIndex === STEPS.length - 1 ? 'Finish' : 'Next'}
-            </button>
+            <div className="video-tutorial__nav-buttons">
+              {stepIndex > 0 && (
+                <button className="video-tutorial__back-button" onClick={goBack}>
+                  Back
+                </button>
+              )}
+              <button className={`video-tutorial__start-button ${stepIndex === 0 ? 'video-tutorial__start-button--pulse' : ''}`} onClick={stepIndex === STEPS.length - 1 ? onClose : goNext}>
+                {stepIndex === STEPS.length - 1 ? 'Finish' : 'Next'}
+              </button>
+            </div>
           </div>
         </div>
       </div>

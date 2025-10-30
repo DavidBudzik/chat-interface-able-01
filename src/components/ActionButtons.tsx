@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { List, Target, DollarSign, Copy } from 'lucide-react';
 import './ActionButtons.css';
 
@@ -32,6 +32,32 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
   onButtonClick, 
   onOptionSelect 
 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const buttonsRef = useRef<HTMLDivElement>(null);
+
+  // Close options when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node) &&
+        buttonsRef.current &&
+        !buttonsRef.current.contains(event.target as Node)
+      ) {
+        if (activeButton !== null) {
+          onButtonClick(null);
+        }
+      }
+    }
+
+    if (activeButton !== null) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [activeButton, onButtonClick]);
+
   const handleButtonClick = (buttonName: string) => {
     onButtonClick(activeButton === buttonName ? null : buttonName);
   };
@@ -57,7 +83,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
 
   return (
     <>
-      <div className="action-buttons">
+      <div className="action-buttons" ref={buttonsRef}>
         <button 
           className="action-button" 
           onClick={() => handleButtonClick('findCompanies')}
@@ -82,7 +108,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
       </div>
       
       {currentOptions.length > 0 && (
-        <div className="workflow-options">
+        <div className="workflow-options" ref={containerRef}>
           {currentOptions.map((option, index) => (
             <button
               key={index}

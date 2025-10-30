@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { X } from 'lucide-react';
+import closeIcon from '../assets/icons/Close.svg';
 import './Modal.css';
 
 interface ModalProps {
@@ -52,7 +52,7 @@ export const Modal: React.FC<ModalProps> = ({
                 onClick={onClose}
                 aria-label="Close modal"
               >
-                <X size={20} />
+                <img src={closeIcon} alt="Close" className="modal__close-icon" />
               </button>
             )}
           </div>

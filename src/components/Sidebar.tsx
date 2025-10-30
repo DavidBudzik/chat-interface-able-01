@@ -1,12 +1,38 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { PanelLeft, Plus, Workflow, Bell, Search, Filter, ChevronDown, Play, X, Folder, FolderPlus, MoreHorizontal, FileText, Download, AlertCircle, CheckCircle, Search as SearchIcon, FileSearch } from 'lucide-react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import ableLogoSvg from '../assets/able-logo.svg';
+import playIcon from '../assets/icons/play.svg';
+import workflowIcon from '../assets/icons/Workflow.svg';
+import searchIcon from '../assets/icons/Search.svg';
+import filterIcon from '../assets/icons/Filter.svg';
+import notificationsIcon from '../assets/icons/Notifications.svg';
+import closeIcon from '../assets/icons/Close.svg';
+import chevronDownIcon from '../assets/icons/Chevron down.svg';
+import addIcon from '../assets/icons/Add.svg';
+import sidebarIcon from '../assets/icons/sidebar.svg';
+import folderIcon from '../assets/icons/Folder.svg';
+import fileIcon from '../assets/icons/File.svg';
+import downloadIcon from '../assets/icons/Download.svg';
+import alertIcon from '../assets/icons/Alert.svg';
+import checkIcon from '../assets/icons/Confirmation.svg';
+import predictiveReportsIcon from '../assets/icons/Predictive reports.svg';
+import gridIcon from '../assets/icons/Workflow.svg';
+import reportsIcon from '../assets/icons/Predictive reports.svg';
+import menuIcon from '../assets/icons/Menu - horiz..svg';
+import threeDotsVerticalIcon from '../assets/icons/Menu.svg';
+import editIcon from '../assets/icons/Edit.svg';
+import trashIcon from '../assets/icons/Delete.svg';
+import usersIcon from '../assets/icons/Team.svg';
+import profileIcon from '../assets/icons/Profile.svg';
+import logoutIcon from '../assets/icons/Logout.svg';
+import codeIcon from '../assets/icons/Code Assistant.svg';
+import fileSearchIcon from '../assets/icons/Search everywhere.svg';
 import './Sidebar.css';
 
 interface SidebarProps {
   isOpen: boolean;
   onToggle: () => void;
   onWatchVideo?: () => void;
+  onResetTutorial?: () => void;
 }
 
 interface Notification {
@@ -19,6 +45,11 @@ interface Notification {
 }
 
 const NOTIFICATIONS_STORAGE_KEY = 'able_notifications_read_state';
+const SIDEBAR_EXPANDED_KEY = 'sidebarExpanded';
+// FOLDERS_EXPANDED_KEY removed - folders section only contains tutorial card
+const RESEARCHES_EXPANDED_KEY = 'researchesExpanded';
+const SELECTED_ITEM_ID_KEY = 'selectedItemId';
+const LAST_SEARCH_QUERY_KEY = 'lastSearchQuery';
 const INITIAL_NOTIFICATIONS: Omit<Notification, 'read'>[] = [
   { id: '1', title: "New Workflow completed", description: "Heating companies in Iceland", time: "14 days ago", icon: "workflow" },
   { id: '2', title: "Research data updated", description: "AI Tools for Enterprise Use", time: "2 days ago", icon: "research" },
@@ -42,15 +73,28 @@ const INITIAL_NOTIFICATIONS: Omit<Notification, 'read'>[] = [
   { id: '20', title: "Data processed", description: "Smart Cities Initiative", time: "4 months ago", icon: "research" }
 ];
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, onWatchVideo }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, onWatchVideo, onResetTutorial }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showCreateMenu, setShowCreateMenu] = useState(false);
-  const [showNewFolderModal, setShowNewFolderModal] = useState(false);
-  const [folderName, setFolderName] = useState('');
+  // Folder modal state removed - no folders in navigation
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  // foldersExpanded state removed - folders section only contains tutorial card
+  const [researchesExpanded, setResearchesExpanded] = useState<boolean>(() => {
+    const v = localStorage.getItem(RESEARCHES_EXPANDED_KEY);
+    return v ? JSON.parse(v) : true;
+  });
+  const [searchQuery, setSearchQuery] = useState<string>(() => localStorage.getItem(LAST_SEARCH_QUERY_KEY) || '');
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(() => localStorage.getItem(SELECTED_ITEM_ID_KEY));
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    type: 'research';
+    itemId: string;
+  } | null>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState<boolean>(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const createMenuRef = useRef<HTMLDivElement>(null);
-  const newFolderModalRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Initialize notifications with read state from localStorage
   useEffect(() => {
@@ -81,6 +125,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, onWatchVideo
     }
   }, [notifications]);
 
+  // Persist UI state - folders section persistence removed
+
+  useEffect(() => {
+    localStorage.setItem(RESEARCHES_EXPANDED_KEY, JSON.stringify(researchesExpanded));
+  }, [researchesExpanded]);
+
+  useEffect(() => {
+    if (selectedItemId !== null) localStorage.setItem(SELECTED_ITEM_ID_KEY, selectedItemId);
+  }, [selectedItemId]);
+
+  useEffect(() => {
+    localStorage.setItem(LAST_SEARCH_QUERY_KEY, searchQuery);
+  }, [searchQuery]);
+
   const toggleSidebar = () => {
     onToggle();
   };
@@ -93,23 +151,57 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, onWatchVideo
     setShowCreateMenu(!showCreateMenu);
   };
 
-  const handleCreateFolder = () => {
-    setShowCreateMenu(false);
-    setShowNewFolderModal(true);
-    setFolderName('New folder');
-  };
+  // Folder creation functions removed - no folders in navigation
 
-  const handleCancelFolder = () => {
-    setShowNewFolderModal(false);
-    setFolderName('');
-  };
+  // No folder data - folders section only contains tutorial card
+  const [researches, setResearches] = useState<
+    { id: string; name: string; type: 'chat' | 'document' | 'code' }
+  >([
+    { id: 'r1', name: 'AI tools for SMBs', type: 'chat' },
+    { id: 'r2', name: 'Payments infra deep dive', type: 'document' },
+    { id: 'r3', name: 'SDK integration audit', type: 'code' },
+    { id: 'r4', name: 'Competitor mapping', type: 'document' },
+    { id: 'r5', name: 'Fundraising tracker', type: 'chat' },
+  ]);
 
-  const handleCreateFolderSubmit = () => {
-    // Here you would typically create the folder
-    console.log('Creating folder:', folderName);
-    setShowNewFolderModal(false);
-    setFolderName('');
-  };
+  // Filtering with debounce
+  const [internalQuery, setInternalQuery] = useState<string>(searchQuery);
+  useEffect(() => {
+    const handle = setTimeout(() => setSearchQuery(internalQuery), 300);
+    return () => clearTimeout(handle);
+  }, [internalQuery]);
+
+  // No folder filtering needed - folders section only contains tutorial card
+
+  const filteredResearches = useMemo(() => {
+    if (!searchQuery) return researches;
+    const q = searchQuery.toLowerCase();
+    return researches.filter(r => r.name.toLowerCase().includes(q));
+  }, [researches, searchQuery]);
+
+  // Context menu handlers
+  const openContextMenu = useCallback((e: React.MouseEvent, type: 'research', itemId: string) => {
+    e.preventDefault();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const preferredX = e.clientX;
+    const preferredY = e.clientY;
+    const width = 200;
+    const height = 160;
+    // Ensure context menu doesn't overlap with sidebar
+    const sidebarWidth = isOpen ? 305 : 60;
+    const x = Math.min(preferredX, viewportWidth - width - 8);
+    const y = Math.min(preferredY, viewportHeight - height - 8);
+    setContextMenu({ x, y, type, itemId });
+  }, [isOpen]);
+
+  const closeContextMenu = useCallback(() => setContextMenu(null), []);
+
+  // User menu handlers
+  const toggleUserMenu = () => setUserMenuOpen(v => !v);
+  const closeUserMenu = () => setUserMenuOpen(false);
+
+  // Folder creation submit function removed - no folders in navigation
 
   const handleCreateResearch = () => {
     setShowCreateMenu(false);
@@ -129,7 +221,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, onWatchVideo
     );
   };
 
-  // Close modal when clicking outside
+  // Close popovers when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -138,33 +230,67 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, onWatchVideo
       if (createMenuRef.current && !createMenuRef.current.contains(event.target as Node)) {
         setShowCreateMenu(false);
       }
-      if (newFolderModalRef.current && !newFolderModalRef.current.contains(event.target as Node)) {
-        setShowNewFolderModal(false);
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+      if (contextMenu) {
+        const anyTarget = event.target as Node;
+        // Close context menu on outside click
+        if (!(anyTarget as HTMLElement).closest?.('.context-menu')) {
+          closeContextMenu();
+        }
       }
     };
 
-    if (showNotifications || showCreateMenu || showNewFolderModal) {
+    if (showNotifications || showCreateMenu || userMenuOpen || contextMenu) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showNotifications, showCreateMenu, showNewFolderModal]);
+  }, [showNotifications, showCreateMenu, userMenuOpen, contextMenu, closeContextMenu]);
+
+  // Close menus on Escape, close context menu on scroll
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowNotifications(false);
+        setShowCreateMenu(false);
+        setUserMenuOpen(false);
+        closeContextMenu();
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        const el = document.getElementById('sidebar-search-input') as HTMLInputElement | null;
+        el?.focus();
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
+        onToggle();
+      }
+    };
+    const onScroll = () => {
+      if (contextMenu) closeContextMenu();
+    };
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('scroll', onScroll, true);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('scroll', onScroll, true);
+    };
+  }, [contextMenu, closeContextMenu, onToggle]);
 
   return (
-    <div className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
+    <div className={`sidebar ${isOpen ? 'sidebar--open' : ''}`} role="navigation" aria-label="Main navigation sidebar">
       <div className="sidebar__container">
         {isOpen && (
           <div className="sidebar__header">
-            <div className="sidebar__logo-block">
+            <div className="sidebar__logo-block" aria-hidden>
               <div className="sidebar__logo-icon">
-                <img src={ableLogoSvg} alt="Able Logo" className="sidebar__logo-image" />
+                <img src={ableLogoSvg} alt="Able" className="sidebar__logo-image" />
               </div>
-              <p className="sidebar__logo-text">Able</p>
             </div>
             <button className="sidebar__toggle-button" onClick={toggleSidebar} aria-label="Toggle sidebar">
-              <PanelLeft size={20} />
+              <img src={sidebarIcon} alt="Toggle sidebar" className="sidebar__icon" />
             </button>
           </div>
         )}
@@ -172,51 +298,69 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, onWatchVideo
         {isOpen && (
           <div className="sidebar__content">
             <div className="sidebar__nav">
-              <button className="sidebar__menu-item sidebar__menu-item--create" onClick={toggleCreateMenu}>
-                <div className="sidebar__menu-icon sidebar__menu-icon--red">
-                  <Plus size={16} />
-                </div>
-                <span className="sidebar__menu-label">Create new</span>
-              </button>
+              <div className="sidebar__buttons-group">
+                {/* New Research primary button */}
+                <button
+                  className="sidebar__menu-item sidebar__menu-item--create"
+                  onClick={toggleCreateMenu}
+                  aria-label="Create new research"
+                >
+                  <div className="sidebar__menu-icon sidebar__menu-icon--red">
+                    <img src={addIcon} alt="Add" className="sidebar__icon-inline sidebar__icon-inline--cta" />
+                  </div>
+                  <span className="sidebar__menu-label sidebar__menu-label--cta">New Research</span>
+                </button>
 
-              <div className="sidebar__workflows-button-wrapper">
-                <button className="sidebar__workflows-button">
-                  <Workflow size={24} />
-                  <span>All workflows</span>
+                {/* Nav items */}
+                <button className="sidebar__menu-item" aria-label="All workflows">
+                  <img src={gridIcon} alt="Grid" className="sidebar__icon" />
+                  <span className="sidebar__menu-label">All Workflows</span>
+                </button>
+                <button className="sidebar__menu-item" aria-label="Intelligence reports">
+                  <img src={reportsIcon} alt="Bar chart" className="sidebar__icon" />
+                  <span className="sidebar__menu-label">Intelligence Reports</span>
                 </button>
               </div>
 
-              <button className="sidebar__menu-item">
-                <div className="sidebar__menu-icon">
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path d="M10 4V16M4 10H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                  </svg>
+              {/* Search */}
+              <div className="sidebar__search-item" aria-label="Search researches">
+                <div className="sidebar__search-content" style={{ width: '100%' }}>
+                  <img src={searchIcon} alt="Search" className="sidebar__search-icon" />
+                  <input
+                    id="sidebar-search-input"
+                    type="text"
+                    value={internalQuery}
+                    onChange={(e) => setInternalQuery(e.target.value)}
+                    placeholder="Search researches..."
+                    aria-label="Search researches"
+                    style={{
+                      flex: 1,
+                      background: 'transparent',
+                      border: 'none',
+                      outline: 'none',
+                      color: '#FFFFFF',
+                      fontSize: 14,
+                    }}
+                  />
                 </div>
-                <span className="sidebar__menu-label">Predictive Reports</span>
-              </button>
-
-              <div className="sidebar__search-item">
-                <div className="sidebar__search-content">
-                  <Search size={20} className="sidebar__search-icon" />
-                  <span className="sidebar__search-placeholder">Search researches....</span>
-                </div>
-                <button className="sidebar__filter-button" aria-label="Filter">
-                  <Filter size={16} />
+                <button className="sidebar__filter-button" aria-label="Filter search results">
+                  <img src={filterIcon} alt="Filter" className="sidebar__icon" />
                 </button>
               </div>
             </div>
-
-            <div className="sidebar__folders">
-              <div className="sidebar__folders-header">
-                <span className="sidebar__folders-title">Folders</span>
-                <ChevronDown size={24} />
+            
+            {/* Folders section */}
+            <div className="sidebar__folders" style={{ marginBottom: 16, flex: 'unset' }}>
+              <div className="sidebar__folders-header" style={{ padding: '14px 16px', height: 48, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span className="sidebar__folders-title" style={{ textTransform: 'uppercase', letterSpacing: 0.5, fontSize: 13, fontWeight: 600, color: '#FFFFFF' }}>Folders</span>
               </div>
-              <div className="sidebar__folders-content">
+              <div style={{ padding: '0 8px 16px 8px' }}>
+                {/* Tutorial Card */}
                 <div className="sidebar__tutorial-card">
                   <div className="sidebar__tutorial-header">
                     <span className="sidebar__tutorial-title">Getting Started</span>
                     <button className="sidebar__tutorial-close" aria-label="Close tutorial">
-                      <X size={24} />
+                      <img src={closeIcon} alt="Close" className="sidebar__icon" />
                     </button>
                   </div>
                   <p className="sidebar__tutorial-description">
@@ -233,11 +377,127 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, onWatchVideo
                     aria-label="Watch tutorial video"
                   >
                     <div className="sidebar__tutorial-watch-icon">
-                      <Play size={16} />
+                      <img src={playIcon} alt="Play" className="sidebar__icon" />
                     </div>
                     <span className="sidebar__tutorial-watch-text">Watch Video</span>
                   </button>
+                  {import.meta.env.DEV && onResetTutorial && (
+                    <button
+                      className="sidebar__tutorial-reset-button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onResetTutorial();
+                      }}
+                      aria-label="Reset tutorial for testing"
+                    >
+                      Reset Tutorial
+                    </button>
+                  )}
                 </div>
+              </div>
+            </div>
+
+            {/* Researches section */}
+            <div className="sidebar__folders">
+              <button
+                className="sidebar__folders-header"
+                onClick={() => setResearchesExpanded(v => !v)}
+                aria-expanded={researchesExpanded}
+                aria-label="Toggle Researches section"
+                style={{ cursor: 'pointer', background: 'transparent', border: 'none' }}
+              >
+                <span className="sidebar__folders-title" style={{ textTransform: 'uppercase', letterSpacing: 0.5, fontSize: 13, fontWeight: 600 }}>Researches</span>
+                <img
+                  src={chevronDownIcon}
+                  alt="Chevron"
+                  className="sidebar__icon"
+                  style={{ transform: researchesExpanded ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 200ms ease-in-out' }}
+                />
+              </button>
+              <div
+                className="collapsible-content"
+                style={{
+                  overflow: 'hidden',
+                  maxHeight: researchesExpanded ? 2000 : 0,
+                  opacity: researchesExpanded ? 1 : 0,
+                  transition: 'max-height 200ms ease-in-out, opacity 200ms ease-in-out',
+                }}
+              >
+                {filteredResearches.length === 0 && (
+                  <div
+                    style={{
+                      width: '100%',
+                      padding: '24px 0 32px 0',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 12,
+                      color: '#94969C',
+                      minHeight: 220,
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <img
+                      src={ableLogoSvg}
+                      alt="Empty"
+                      className="sidebar__icon"
+                      style={{ width: 60, height: 60, filter: 'brightness(0) invert(0.28)' }}
+                    />
+                    <span style={{ fontSize: 14 }}>No researches created yet...</span>
+                  </div>
+                )}
+                {filteredResearches.map(item => {
+                  const icon = item.type === 'chat' ? fileSearchIcon : item.type === 'document' ? fileIcon : codeIcon;
+                  return (
+                    <div
+                      key={item.id}
+                      role="button"
+                      className="sidebar__research-item"
+                      aria-label={item.name}
+                      aria-selected={selectedItemId === item.id}
+                      onClick={() => setSelectedItemId(item.id)}
+                      onContextMenu={(e) => openContextMenu(e, 'research', item.id)}
+                      style={{
+                        width: 'calc(100% - 16px)',
+                        height: 40,
+                        margin: '0 8px 2px 8px',
+                        padding: '10px 12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 12,
+                        borderRadius: 0,
+                        background: selectedItemId === item.id ? '#2A2B2F' : 'transparent',
+                        cursor: 'pointer',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (selectedItemId !== item.id) e.currentTarget.style.backgroundColor = '#2A2B2F';
+                      }}
+                      onMouseLeave={(e) => {
+                        if (selectedItemId !== item.id) e.currentTarget.style.backgroundColor = 'transparent';
+                      }}
+                    >
+                      <img src={icon} alt="Type" className="sidebar__icon" style={{ filter: 'brightness(0) invert(1)' }} />
+                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#C9C9C9', fontSize: 14 }}>{item.name}</span>
+                      <button
+                        aria-label={`Open context menu for ${item.name}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          const rowEl = (e.currentTarget as HTMLElement).closest('[role="button"]') as HTMLElement | null;
+                          const rect = rowEl?.getBoundingClientRect();
+                          const sidebarWidth = isOpen ? 305 : 60;
+                          const x = sidebarWidth + 8; // 8px to the right of sidebar
+                          const y = rect ? rect.top : e.clientY;
+                          setContextMenu({ x, y, type: 'research', itemId: item.id });
+                        }}
+                        className="sidebar__row-menu-trigger"
+                        style={{ background: 'transparent', border: 'none' }}
+                      >
+                        <img src={threeDotsVerticalIcon} alt="Menu" className="sidebar__icon" />
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -246,25 +506,31 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, onWatchVideo
         {!isOpen && (
           <div className="sidebar__collapsed-content">
             <div className="sidebar__collapsed-nav">
+              <div className="sidebar__collapsed-logo">
+                <img src={ableLogoSvg} alt="Able Logo" className="sidebar__collapsed-logo-image" />
+              </div>
               <button className="sidebar__collapsed-toggle" onClick={toggleSidebar} aria-label="Toggle sidebar">
-                <PanelLeft size={20} />
+                <img src={sidebarIcon} alt="Toggle sidebar" className="sidebar__icon" />
               </button>
-              <button className="sidebar__collapsed-button sidebar__collapsed-button--primary" onClick={toggleCreateMenu} aria-label="New chat">
-                <Plus size={16} />
+              <button className="sidebar__collapsed-button sidebar__collapsed-button--primary" onClick={toggleCreateMenu} aria-label="New research">
+                <img src={addIcon} alt="Create new" className="sidebar__icon" />
               </button>
-              <button className="sidebar__collapsed-button sidebar__collapsed-button--secondary" aria-label="Workflows">
-                <Workflow size={16} />
+              <button className="sidebar__collapsed-button sidebar__collapsed-button--secondary" aria-label="All workflows">
+                <img src={gridIcon} alt="Workflows" className="sidebar__icon" />
+              </button>
+              <button className="sidebar__collapsed-button sidebar__collapsed-button--secondary" aria-label="Intelligence reports">
+                <img src={reportsIcon} alt="Reports" className="sidebar__icon" />
               </button>
             </div>
             <div className="sidebar__collapsed-account">
               <button className="sidebar__collapsed-notification" onClick={toggleNotifications} aria-label="Notifications">
-                <Bell size={16} />
+                <img src={notificationsIcon} alt="Notifications" className="sidebar__icon" />
                 {unreadCount > 0 && (
                   <span className="sidebar__notification-badge sidebar__notification-badge--collapsed sidebar__notification-badge--dot"></span>
                 )}
               </button>
               <div className="avatar">
-                <span>BD</span>
+                <span>DB</span>
               </div>
             </div>
           </div>
@@ -272,19 +538,93 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, onWatchVideo
       </div>
 
       {isOpen && (
-        <div className="sidebar__account">
-          <div className="sidebar__account-info">
-            <div className="avatar">
-              <span>BD</span>
+        <div className="sidebar__account" aria-label="User menu">
+          <button
+            onClick={toggleUserMenu}
+            aria-haspopup
+            aria-expanded={userMenuOpen}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              background: 'transparent',
+              border: 'none',
+              width: 'auto',
+              cursor: 'pointer',
+              padding: 12,
+            }}
+          >
+            <div className="avatar" style={{ width: 32, height: 32, background: '#FF4436' }}>
+              <span style={{ color: '#fff', fontWeight: 500 }}>DB</span>
             </div>
-            <span className="sidebar__account-name">Robbi Darwis</span>
-          </div>
+            <span className="sidebar__account-name" style={{ color: '#C9C9C9', fontSize: 14, fontWeight: 500 }}>Daniel</span>
+          </button>
+          {/* Notifications button with badge */}
           <button className="sidebar__notification-button" onClick={toggleNotifications} aria-label="Notifications">
-            <Bell size={24} />
+            <img src={notificationsIcon} alt="Notifications" className="sidebar__icon" />
             {unreadCount > 0 && (
               <span className="sidebar__notification-badge sidebar__notification-badge--dot"></span>
             )}
           </button>
+
+          {/* User dropdown */}
+          {userMenuOpen && (
+            <div
+              ref={userMenuRef}
+              role="menu"
+              aria-label="User menu"
+              style={{
+                position: 'absolute',
+                bottom: '100%',
+                left: 16,
+                marginBottom: 8,
+                width: 192,
+                background: '#FFFFFF',
+                borderRadius: 8,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                padding: 8,
+                display: 'block',
+                zIndex: 1100,
+              }}
+            >
+              {[
+                { id: 'profile', label: 'Profile', icon: profileIcon, action: () => {} },
+                { id: 'teams', label: 'Teams', icon: usersIcon, action: () => {} },
+                { id: 'org', label: 'Organization', icon: reportsIcon, action: () => {} },
+              ].map(i => (
+                <button
+                  key={i.id}
+                  role="menuitem"
+                  onClick={() => { i.action(); closeUserMenu(); }}
+                  style={{
+                    width: '100%', height: 36, padding: '8px 12px',
+                    borderRadius: 4, display: 'flex', alignItems: 'center', gap: 10,
+                    background: 'transparent', border: 'none', cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F5F5F5')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                >
+                  <img src={i.icon} alt="" className="sidebar__icon" style={{ filter: 'none' }} />
+                  <span style={{ fontSize: 14, color: '#18181B' }}>{i.label}</span>
+                </button>
+              ))}
+              <div style={{ height: 1, background: '#E5E7EB', margin: '4px 0' }} />
+              <button
+                role="menuitem"
+                onClick={() => { closeUserMenu(); }}
+                style={{
+                  width: '100%', height: 36, padding: '8px 12px',
+                  borderRadius: 4, display: 'flex', alignItems: 'center', gap: 10,
+                  background: 'transparent', border: 'none', cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F5F5F5')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+              >
+                <img src={logoutIcon} alt="" className="sidebar__icon" style={{ filter: 'none' }} />
+                <span style={{ fontSize: 14, color: '#DC2626' }}>Logout</span>
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -293,50 +633,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, onWatchVideo
         <div className="sidebar__create-menu" ref={createMenuRef}>
           <div className="sidebar__create-menu-item" onClick={handleCreateResearch}>
             <div className="sidebar__create-menu-icon">
-              <FileSearch size={24} />
+              <img src={fileSearchIcon} alt="Research" className="sidebar__icon" />
             </div>
             <span className="sidebar__create-menu-label">Research</span>
-          </div>
-          <div className="sidebar__create-menu-item" onClick={handleCreateFolder}>
-            <div className="sidebar__create-menu-icon">
-              <Folder size={24} />
-            </div>
-            <span className="sidebar__create-menu-label">Folder</span>
           </div>
         </div>
       )}
 
-      {/* New Folder Modal */}
-      {showNewFolderModal && (
-        <div className="sidebar__modal-overlay">
-          <div className="sidebar__new-folder-modal" ref={newFolderModalRef}>
-            <div className="sidebar__modal-header">
-              <h2 className="sidebar__modal-title">New folder</h2>
-            </div>
-            <div className="sidebar__modal-content">
-              <div className="sidebar__input-group">
-                <label className="sidebar__input-label">Folder name</label>
-                <input
-                  type="text"
-                  className="sidebar__input-field"
-                  value={folderName}
-                  onChange={(e) => setFolderName(e.target.value)}
-                  placeholder="New folder"
-                  autoFocus
-                />
-              </div>
-            </div>
-            <div className="sidebar__modal-footer">
-              <button className="sidebar__modal-button sidebar__modal-button--secondary" onClick={handleCancelFolder}>
-                Cancel
-              </button>
-              <button className="sidebar__modal-button sidebar__modal-button--primary" onClick={handleCreateFolderSubmit}>
-                Create
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* New Folder Modal removed - no folders in navigation */}
 
       {/* Notifications Modal */}
       {showNotifications && (
@@ -359,12 +663,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, onWatchVideo
             {notifications.map((notification) => {
               const getIcon = (iconType: string) => {
                 switch (iconType) {
-                  case 'workflow': return <Workflow size={24} />;
-                  case 'research': return <FileText size={24} />;
-                  case 'error': return <AlertCircle size={24} />;
-                  case 'folder': return <Folder size={24} />;
-                  case 'download': return <Download size={24} />;
-                  default: return <Workflow size={24} />;
+                  case 'workflow': return <img src={workflowIcon} alt="Workflow" className="sidebar__icon" />;
+                  case 'research': return <img src={fileIcon} alt="Research" className="sidebar__icon" />;
+                  case 'error': return <img src={alertIcon} alt="Error" className="sidebar__icon" />;
+                  case 'folder': return <img src={folderIcon} alt="Folder" className="sidebar__icon" />;
+                  case 'download': return <img src={downloadIcon} alt="Download" className="sidebar__icon" />;
+                  default: return <img src={workflowIcon} alt="Workflow" className="sidebar__icon" />;
                 }
               };
               
@@ -391,6 +695,65 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, onWatchVideo
               );
             })}
           </div>
+        </div>
+      )}
+
+      {/* Context Menu */}
+      {contextMenu && (
+        <div
+          className="context-menu"
+          role="menu"
+          aria-label="Context menu"
+          style={{
+            position: 'fixed',
+            top: contextMenu.y,
+            left: contextMenu.x,
+            width: 200,
+            background: '#FFFFFF',
+            borderRadius: 0,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            padding: 8,
+            zIndex: 6000,
+          }}
+        >
+          {/* Rename */}
+          <button
+            role="menuitem"
+            onClick={() => { /* open rename */ closeContextMenu(); }}
+            style={{ width: '100%', height: 36, padding: '8px 12px', borderRadius: 0, display: 'flex', alignItems: 'center', gap: 10, background: 'transparent', border: 'none', cursor: 'pointer' }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F5F5F5')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+          >
+            <img src={editIcon} alt="" className="sidebar__icon" style={{ filter: 'none' }} />
+            <span style={{ fontSize: 14, color: '#18181B' }}>Rename</span>
+          </button>
+
+          {/* Collaborate */}
+          <button
+            role="menuitem"
+            onClick={() => { /* collaborate */ closeContextMenu(); }}
+            style={{ width: '100%', height: 36, padding: '8px 12px', borderRadius: 0, display: 'flex', alignItems: 'center', gap: 10, background: 'transparent', border: 'none', cursor: 'pointer' }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F5F5F5')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+          >
+            <img src={usersIcon} alt="" className="sidebar__icon" style={{ filter: 'none' }} />
+            <span style={{ fontSize: 14, color: '#18181B' }}>Collaborate</span>
+          </button>
+
+          {/* Divider */}
+          <div style={{ height: 1, background: '#E5E7EB', margin: '4px 0' }} />
+
+          {/* Delete */}
+          <button
+            role="menuitem"
+            onClick={() => { /* delete */ closeContextMenu(); }}
+            style={{ width: '100%', height: 36, padding: '8px 12px', borderRadius: 0, display: 'flex', alignItems: 'center', gap: 10, background: 'transparent', border: 'none', cursor: 'pointer' }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F5F5F5')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+          >
+            <img src={trashIcon} alt="" className="sidebar__icon" style={{ filter: 'none' }} />
+            <span style={{ fontSize: 14, color: '#DC2626' }}>Delete</span>
+          </button>
         </div>
       )}
     </div>

@@ -1,20 +1,33 @@
 import React from 'react';
-import { PanelLeft, Plus, Workflow, Bell, Search, Filter, ChevronDown, Play, X } from 'lucide-react';
 import { Modal } from './Modal';
 import { useModal } from '../hooks/useModal';
 import ableLogoSvg from '../assets/able-logo.svg';
+import playIcon from '../assets/icons/play.svg';
+import workflowIcon from '../assets/icons/Workflow.svg';
+import searchIcon from '../assets/icons/Search.svg';
+import filterIcon from '../assets/icons/Filter.svg';
+import notificationsIcon from '../assets/icons/Notifications.svg';
+import closeIcon from '../assets/icons/Close.svg';
+import chevronDownIcon from '../assets/icons/Chevron down.svg';
+import addIcon from '../assets/icons/Add.svg';
+import sidebarIcon from '../assets/icons/sidebar.svg';
+import predictiveReportsIcon from '../assets/icons/Predictive reports.svg';
+import folderIcon from '../assets/icons/Folder.svg';
+import fileSearchIcon from '../assets/icons/Search everywhere.svg';
 import './Sidebar.css';
 
 interface SimplifiedSidebarProps {
   isOpen: boolean;
   onToggle: () => void;
   onWatchVideo?: () => void;
+  onResetTutorial?: () => void;
 }
 
 export const SimplifiedSidebar: React.FC<SimplifiedSidebarProps> = ({ 
   isOpen, 
   onToggle, 
-  onWatchVideo 
+  onWatchVideo,
+  onResetTutorial 
 }) => {
   const createMenu = useModal();
   const notifications = useModal();
@@ -48,7 +61,7 @@ export const SimplifiedSidebar: React.FC<SimplifiedSidebarProps> = ({
                 <p className="sidebar__logo-text">Able</p>
               </div>
               <button className="sidebar__toggle-button" onClick={onToggle} aria-label="Toggle sidebar">
-                <PanelLeft size={20} />
+                <img src={sidebarIcon} alt="Toggle sidebar" className="sidebar__icon" />
               </button>
             </div>
           )}
@@ -56,36 +69,38 @@ export const SimplifiedSidebar: React.FC<SimplifiedSidebarProps> = ({
           {isOpen && (
             <div className="sidebar__content">
               <div className="sidebar__nav">
-                <button className="sidebar__menu-item sidebar__menu-item--create" onClick={createMenu.open}>
-                  <div className="sidebar__menu-icon sidebar__menu-icon--red">
-                    <Plus size={16} />
-                  </div>
-                  <span className="sidebar__menu-label">Create new</span>
-                </button>
+                <div className="sidebar__buttons-group">
+                  <button className="sidebar__menu-item sidebar__menu-item--create" onClick={createMenu.open}>
+                    <div className="sidebar__menu-icon sidebar__menu-icon--red">
+                      <img src={addIcon} alt="Create new" className="sidebar__icon-inline" />
+                    </div>
+                    <span className="sidebar__menu-label">Create new</span>
+                  </button>
 
-                <div className="sidebar__workflows-button-wrapper">
                   <button className="sidebar__workflows-button">
-                    <Workflow size={24} />
+                    <img src={workflowIcon} alt="Workflow" className="sidebar__icon" />
                     <span>All workflows</span>
+                  </button>
+
+                  <button className="sidebar__menu-item">
+                    <div className="sidebar__menu-icon">
+                      <img 
+                        src={predictiveReportsIcon} 
+                        alt="Predictive Reports" 
+                        className="sidebar__menu-icon-image"
+                      />
+                    </div>
+                    <span className="sidebar__menu-label">Predictive Reports</span>
                   </button>
                 </div>
 
-                <button className="sidebar__menu-item">
-                  <div className="sidebar__menu-icon">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 4V16M4 10H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
-                  </div>
-                  <span className="sidebar__menu-label">Predictive Reports</span>
-                </button>
-
                 <div className="sidebar__search-item">
                   <div className="sidebar__search-content">
-                    <Search size={20} className="sidebar__search-icon" />
+                    <img src={searchIcon} alt="Search" className="sidebar__search-icon" />
                     <span className="sidebar__search-placeholder">Search researches....</span>
                   </div>
                   <button className="sidebar__filter-button" aria-label="Filter">
-                    <Filter size={16} />
+                    <img src={filterIcon} alt="Filter" className="sidebar__icon" />
                   </button>
                 </div>
               </div>
@@ -93,14 +108,14 @@ export const SimplifiedSidebar: React.FC<SimplifiedSidebarProps> = ({
               <div className="sidebar__folders">
                 <div className="sidebar__folders-header">
                   <span className="sidebar__folders-title">Folders</span>
-                  <ChevronDown size={24} />
+                  <img src={chevronDownIcon} alt="Expand" className="sidebar__icon" />
                 </div>
                 <div className="sidebar__folders-content">
                   <div className="sidebar__tutorial-card">
                     <div className="sidebar__tutorial-header">
                       <span className="sidebar__tutorial-title">Getting Started</span>
                       <button className="sidebar__tutorial-close" aria-label="Close tutorial">
-                        <X size={24} />
+                        <img src={closeIcon} alt="Close" className="sidebar__icon" />
                       </button>
                     </div>
                     <p className="sidebar__tutorial-description">
@@ -117,10 +132,22 @@ export const SimplifiedSidebar: React.FC<SimplifiedSidebarProps> = ({
                       aria-label="Watch tutorial video"
                     >
                       <div className="sidebar__tutorial-watch-icon">
-                        <Play size={16} />
+                        <img src={playIcon} alt="Play" className="sidebar__icon" />
                       </div>
                       <span className="sidebar__tutorial-watch-text">Watch Video</span>
                     </button>
+                    {import.meta.env.DEV && onResetTutorial && (
+                      <button
+                        className="sidebar__tutorial-reset-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onResetTutorial();
+                        }}
+                        aria-label="Reset tutorial for testing"
+                      >
+                        🔄 Reset Tutorial
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -130,19 +157,22 @@ export const SimplifiedSidebar: React.FC<SimplifiedSidebarProps> = ({
           {!isOpen && (
             <div className="sidebar__collapsed-content">
               <div className="sidebar__collapsed-nav">
+                <div className="sidebar__collapsed-logo">
+                  <img src={ableLogoSvg} alt="Able Logo" className="sidebar__collapsed-logo-image" />
+                </div>
                 <button className="sidebar__collapsed-toggle" onClick={onToggle} aria-label="Toggle sidebar">
-                  <PanelLeft size={20} />
+                  <img src={sidebarIcon} alt="Toggle sidebar" className="sidebar__icon" />
                 </button>
                 <button className="sidebar__collapsed-button sidebar__collapsed-button--primary" onClick={createMenu.open} aria-label="New chat">
-                  <Plus size={16} />
+                  <img src={addIcon} alt="Create new" className="sidebar__icon" />
                 </button>
                 <button className="sidebar__collapsed-button sidebar__collapsed-button--secondary" aria-label="Workflows">
-                  <Workflow size={16} />
+                  <img src={workflowIcon} alt="Workflows" className="sidebar__icon" />
                 </button>
               </div>
               <div className="sidebar__collapsed-account">
                 <button className="sidebar__collapsed-notification" onClick={notifications.open} aria-label="Notifications">
-                  <Bell size={16} />
+                  <img src={notificationsIcon} alt="Notifications" className="sidebar__icon" />
                   <span className="sidebar__notification-badge sidebar__notification-badge--collapsed sidebar__notification-badge--dot sidebar__notification-badge--red"></span>
                 </button>
                 <div className="avatar">
@@ -162,7 +192,7 @@ export const SimplifiedSidebar: React.FC<SimplifiedSidebarProps> = ({
               <span className="sidebar__account-name">Robbi Darwis</span>
             </div>
             <button className="sidebar__notification-button" onClick={notifications.open} aria-label="Notifications">
-              <Bell size={24} />
+              <img src={notificationsIcon} alt="Notifications" className="sidebar__icon" />
               <span className="sidebar__notification-badge sidebar__notification-badge--dot sidebar__notification-badge--red"></span>
             </button>
           </div>
@@ -180,13 +210,13 @@ export const SimplifiedSidebar: React.FC<SimplifiedSidebarProps> = ({
       >
         <div className="sidebar__create-menu-item" onClick={handleCreateResearch}>
           <div className="sidebar__create-menu-icon">
-            <Workflow size={24} />
+            <img src={fileSearchIcon} alt="Research" className="sidebar__icon" />
           </div>
           <span className="sidebar__create-menu-label">Research</span>
         </div>
         <div className="sidebar__create-menu-item" onClick={handleCreateFolder}>
           <div className="sidebar__create-menu-icon">
-            <Workflow size={24} />
+            <img src={folderIcon} alt="Folder" className="sidebar__icon" />
           </div>
           <span className="sidebar__create-menu-label">Folder</span>
         </div>

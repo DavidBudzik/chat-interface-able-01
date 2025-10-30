@@ -15,7 +15,7 @@
   padding: var(--spacing-4) var(--spacing-5);
   background: var(--color-surface-default);
   border: 1px solid var(--color-border-default);
-  border-radius: var(--radius-sm);
+  border-radius: 0px;
   cursor: pointer;
   transition: all var(--transition-normal);
   min-width: 0;
@@ -38,7 +38,10 @@
   background: var(--color-surface-hover);
 }
 
-.action-button svg {
+.action-button svg,
+.action-button img {
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
   color: var(--color-icon-default);
 }
@@ -68,7 +71,7 @@
   padding: var(--spacing-4) var(--spacing-5);
   background: var(--color-surface-default);
   border: 1px solid var(--color-border-default);
-  border-radius: var(--radius-sm);
+  border-radius: 0px;
   cursor: pointer;
   transition: all var(--transition-normal);
   text-align: left;

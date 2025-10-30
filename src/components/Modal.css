@@ -1,3 +1,9 @@
+.modal__close-icon {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -24,7 +30,7 @@
 
 .modal {
   background: var(--color-background-default);
-  border-radius: var(--radius-lg);
+  border-radius: 0px;
   box-shadow: var(--shadow-xl);
   max-width: 90vw;
   max-height: 90vh;
@@ -87,7 +93,7 @@
   height: 32px;
   background: transparent;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: 0px;
   color: var(--color-icon-default);
   cursor: pointer;
   transition: all var(--transition-normal);
@@ -104,9 +110,13 @@
 }
 
 .modal__content {
-  padding: var(--spacing-7);
+  padding: 0;
   overflow-y: auto;
   flex: 1;
+}
+
+.create-dialog-modal .modal__content {
+  padding: 0;
 }
 
 /* Responsive design */

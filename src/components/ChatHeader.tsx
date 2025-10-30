@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Home, ChevronDown, X, Users } from 'lucide-react';
 import './ChatHeader.css';
 
@@ -14,6 +14,29 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   researchName = "New Research" 
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        triggerRef.current &&
+        !triggerRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    }
+
+    if (showDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [showDropdown]);
 
   return (
     <div className="chat-header">
@@ -21,8 +44,9 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         <div className="chat-header__breadcrumb">
           <Home size={24} className="chat-header__home-icon" />
           <span className="chat-header__breadcrumb-separator">/</span>
-          <div className="chat-header__dropdown-container">
+          <div className="chat-header__dropdown-container" ref={dropdownRef}>
             <button 
+              ref={triggerRef}
               className="chat-header__dropdown-trigger"
               onClick={() => setShowDropdown(!showDropdown)}
               aria-label="Select research"
@@ -46,14 +70,14 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           onClick={onClearChat}
           aria-label="Clear chat"
         >
-          <X size={20} />
+          <X size={24} />
         </button>
         <button 
           className="chat-header__action-button chat-header__collaborate-button" 
           onClick={onCollaborate}
           aria-label="Collaborate"
         >
-          <Users size={20} />
+          <Users size={24} />
         </button>
       </div>
     </div>
