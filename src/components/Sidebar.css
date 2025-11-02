@@ -12,7 +12,7 @@
   left: 0;
   top: 0;
   will-change: width;
-  z-index: 100;
+  z-index: 20000; /* ensure sidebar overlays app content when needed */
 }
 
 .sidebar--open {
@@ -149,7 +149,7 @@
 }
 
 .sidebar__menu-item:focus {
-  outline: 1px solid var(--color-cta-default);
+  outline: 2px solid var(--color-cta-default);
   box-shadow: none;
 }
 
@@ -158,7 +158,11 @@
 }
 
 .sidebar__menu-item:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: #2A2B2F;
+}
+.sidebar__menu-item:active {
+  background: var(--color-cta-default);
+  color: #FFFFFF;
 }
 
 .sidebar__menu-item--create {
@@ -169,8 +173,22 @@
 }
 
 .sidebar__menu-item--create:hover {
-  background: #34353A; /* slightly lighter on hover */
-  border-color: #4A4B50;
+  background: var(--color-cta-default);
+  border-color: var(--color-cta-default);
+  transform: translateY(-1px);
+  box-shadow: 0px 6px 16px 0px rgba(255, 68, 54, 0.25);
+}
+.sidebar__menu-item--create:hover .sidebar__menu-label--cta {
+  color: #FFFFFF;
+}
+.sidebar__menu-item--create:hover .sidebar__icon-inline {
+  filter: brightness(0) invert(1);
+}
+.sidebar__menu-item--create:active {
+  background: var(--color-cta-hover, #E63D30);
+  border-color: var(--color-cta-hover, #E63D30);
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0px 4px 12px 0px rgba(255, 68, 54, 0.2);
 }
 
 .sidebar__menu-icon {
@@ -228,7 +246,12 @@
   font-size: var(--font-size-14);
   font-weight: var(--font-weight-regular);
   line-height: var(--line-height-24);
-  color: #C9C9C9;
+  color: #A0A0A0;
+}
+
+.sidebar__menu-item:hover .sidebar__menu-label,
+.sidebar__menu-item:active .sidebar__menu-label {
+  color: #FFFFFF;
 }
 
 /* Removed - no longer needed */
@@ -276,7 +299,7 @@
   gap: 8px;
   width: 100%;
   height: 48px; /* match menu item height */
-  margin: 0 0 8px 0; /* 8px gap to divider below */
+  margin: 12px 0 12px 0; /* equal spacing above and below */
   padding: 0 8px; /* 8px left/right padding */
   background: #2A2B2F;
   border: none;
@@ -533,6 +556,14 @@
   position: relative;
   overflow: hidden;
 }
+@keyframes sidebar-cta-pulse {
+  0% { box-shadow: 0px 10px 24px 0px rgba(224, 53, 0, 0.15), 0 0 0 0 rgba(224, 53, 0, 0.7); }
+  50% { box-shadow: 0px 10px 24px 0px rgba(224, 53, 0, 0.25), 0 0 0 8px rgba(224, 53, 0, 0); }
+  100% { box-shadow: 0px 10px 24px 0px rgba(224, 53, 0, 0.15), 0 0 0 0 rgba(224, 53, 0, 0); }
+}
+
+.sidebar__tutorial-watch-button { animation: sidebar-cta-pulse 2s infinite; }
+.sidebar__tutorial-watch-button:hover { animation: none; }
 
 .sidebar__tutorial-watch-button::before {
   content: '';
@@ -639,16 +670,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 4.8px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   border-radius: var(--radius-xs);
   flex-shrink: 0;
 }
 
 .sidebar__collapsed-logo-image {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   filter: brightness(0) invert(1);
 }
 
@@ -656,44 +687,45 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 44px;
+  height: 44px;
   border: none;
   background: transparent;
   color: var(--color-icon-on-dark);
   cursor: pointer;
   flex-shrink: 0;
   transition: opacity 0.2s;
+  border-radius: 4px;
 }
 
 .sidebar__collapsed-toggle:hover {
-  opacity: 0.8;
+  background: #2A2B2F;
 }
 
 .sidebar__collapsed-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-1);
+  padding: 0;
   border: none;
   background: transparent;
   color: var(--color-icon-on-dark);
   cursor: pointer;
   flex-shrink: 0;
   transition: opacity 0.2s;
-  width: 24px;
-  height: 24px;
-  border-radius: var(--radius-xs);
+  width: 44px;
+  height: 44px;
+  border-radius: 4px;
 }
 
 .sidebar__collapsed-button:hover {
-  opacity: 0.8;
+  background: #2A2B2F;
 }
 
 .sidebar__collapsed-button--primary {
-  background: var(--color-cta-default);
-  border-radius: 0px;
-  color: white;
+  background: #2A2B2F;
+  color: var(--color-cta-default);
+  border: 1px solid #3A3B3F;
 }
 
 .sidebar__collapsed-button--secondary {
@@ -1058,10 +1090,15 @@
   border: 1px solid var(--color-border-default);
   border-radius: 0px;
   box-shadow: var(--shadow-default);
-  z-index: 6000; /* ensure above all app layers */
+  z-index: 10000; /* ensure above all app layers including chat container */
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+/* Icons inside light surfaces should not be inverted */
+.sidebar__notifications-modal .sidebar__icon {
+  filter: none;
 }
 
 /* Adjust modal position when sidebar is collapsed */

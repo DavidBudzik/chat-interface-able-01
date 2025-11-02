@@ -150,7 +150,7 @@
 
 .video-tutorial__video-container {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 484px;
   border-radius: 0px;
   overflow: hidden;
   position: relative;

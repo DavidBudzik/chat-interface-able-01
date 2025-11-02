@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
 import './TutorialWalkthrough.css';
-import ableLogo from '../assets/able-logo-icon.png';
+import closeIcon from '../assets/icons/Close.svg';
+import playIcon from '../assets/icons/play.svg';
+import addIcon from '../assets/icons/Add.svg';
+import checkIcon from '../assets/icons/Confirmation.svg';
+import listIcon from '../assets/icons/List.svg';
+import graphIcon from '../assets/icons/Graph-widget.svg';
+import shareIcon from '../assets/icons/Share.svg';
+import chevronRightIcon from '../assets/icons/Chevron right.svg';
+import workflowIcon from '../assets/icons/Workflow.svg';
 
 interface TutorialWalkthroughProps {
   isOpen: boolean;
@@ -9,87 +16,351 @@ interface TutorialWalkthroughProps {
 }
 
 interface TutorialStep {
+  id: string;
   title: string;
+  subtitle: string;
+  sectionSubtitle: string;
   description: string;
-  imageSrc: string;
-  ctaHref?: string;
+  additionalText?: string;
+  type: 'video' | 'use-case-selection' | 'interactive-demo' | 'data-sources' | 'feature-highlight' | 'completion';
+  mediaType: 'video' | 'use-cases' | 'templates' | 'sources' | 'features' | 'completion';
+  useCases?: Array<{
+    id: string;
+    icon: string;
+    title: string;
+    desc: string;
+    color: string;
+  }>;
+  templates?: string[];
+  sources?: Array<{
+    name: string;
+    type: string;
+    active: boolean;
+  }>;
+  features?: Array<{
+    title: string;
+    desc: string;
+  }>;
+  nextSteps?: string[];
 }
 
 const STEPS: TutorialStep[] = [
   {
-    title: 'Create your first research',
-    description:
-      'Start by describing what you are looking to explore in natural language. Use placeholders like {Company}, {Domain}, or {Region} to quickly adapt prompts across different targets and scenarios. Keep your initial request concise and goal-oriented for the best results. You can always refine the scope, add more context, or ask follow-up questions in subsequent messages. The AI will understand your intent and help you structure your research effectively.',
-    imageSrc: ableLogo,
+    id: 'welcome',
+    title: 'Getting Started',
+    subtitle: 'with Workflows',
+    sectionSubtitle: 'Introduction to Able',
+    description: 'Able is a globally recognized research and analysis platform for corporate development, market intelligence, and investment decisions. Founded to streamline decision-making, the company has grown into one of the world\'s leading research tools.',
+    additionalText: 'Watch this tutorial to learn how to create your first research project, organize your analysis, and collaborate with your team effectively.',
+    type: 'video',
+    mediaType: 'video',
   },
   {
-    title: 'Open the list panel',
-    description:
-      'Switch to the List tab to view, select, and manage your research results in a structured table format. Filter by company size, location, sector, or any other criteria to narrow down your findings. Sort columns to identify patterns and prioritize the most relevant results. Select multiple items at once using checkboxes to speed up your curation process. Use bulk actions to export selected items, move them to different folders, or apply tags for better organization. Everything stays perfectly synchronized with your chat context, so you can reference specific findings in your conversations.',
-    imageSrc: ableLogo,
+    id: 'use-case',
+    title: 'What brings you',
+    subtitle: 'to Able?',
+    sectionSubtitle: 'Choose your primary use case',
+    description: 'This helps us personalize your experience and show you the most relevant features for your role.',
+    type: 'use-case-selection',
+    mediaType: 'use-cases',
+    useCases: [
+      {
+        id: 'corp-dev',
+        icon: workflowIcon,
+        title: 'Corporate Development',
+        desc: 'M&A research, competitive intelligence, market sizing',
+        color: '#E03500',
+      },
+      {
+        id: 'market-research',
+        icon: listIcon,
+        title: 'Market Research',
+        desc: 'Industry trends, customer insights, market mapping',
+        color: '#0066FF',
+      },
+      {
+        id: 'investment',
+        icon: graphIcon,
+        title: 'Investment Analysis',
+        desc: 'Deal sourcing, due diligence, portfolio monitoring',
+        color: '#00C48C',
+      },
+    ],
   },
   {
-    title: 'Use domain map and reports',
-    description:
-      'Explore related entities and connections using the Domain map to uncover relationships you might have missed. This visual tool helps you understand how companies, people, and concepts are interconnected in your research area. Generate comprehensive reports with quick summaries, key insights, and actionable recommendations to align your team and stakeholders. These powerful tools help you validate your research direction quickly, identify knowledge gaps, and maintain consistent context as your investigation evolves. Use them to present findings professionally and make data-driven decisions.',
-    imageSrc: ableLogo,
+    id: 'first-research',
+    title: 'Create Your First',
+    subtitle: 'Research Project',
+    sectionSubtitle: 'Start with a template or from scratch',
+    description: 'Research projects help you organize data collection, analysis, and collaboration around a specific question or decision.',
+    additionalText: 'Click the "New Research" button to open a workspace. Choose from templates or start from scratch to build your research.',
+    type: 'interactive-demo',
+    mediaType: 'templates',
+    templates: [
+      'Competitive Intelligence Report',
+      'Market Entry Analysis',
+      'Target Company Profile',
+    ],
   },
   {
-    title: 'Share with your team',
-    description:
-      'Invite collaborators and share lists, notes, and exports seamlessly across your organization. Add comments, annotations, and insights directly to your research findings to facilitate team discussions. Iterate on findings collaboratively, with full version history and change tracking to maintain an auditable research process. Export data in multiple formats (CSV, PDF, Excel) to integrate with your existing workflows. The goal is to move from initial exploration to actionable insights quickly and efficiently, ensuring your entire team stays aligned and informed throughout the research process.',
-    imageSrc: ableLogo,
+    id: 'data-sources',
+    title: 'Connect Your',
+    subtitle: 'Data Sources',
+    sectionSubtitle: 'Leverage proprietary and alternative data',
+    description: 'Able connects to 50+ data sources including MathLabs DB, Factset, Moody\'s, and your proprietary datasets.',
+    additionalText: 'Access institutional-grade data across global markets, proprietary signals, and real-time intelligence—all in one place.',
+    type: 'data-sources',
+    mediaType: 'sources',
+    sources: [
+      { name: 'MathLabs DB', type: 'Proprietary signals', active: true },
+      { name: 'Factset', type: 'Market data', active: true },
+      { name: 'Moody\'s', type: 'Credit analytics', active: true },
+      { name: 'Web Intel', type: 'Real-time news', active: true },
+    ],
+  },
+  {
+    id: 'ai-insights',
+    title: 'Generate AI-Powered',
+    subtitle: 'Insights',
+    sectionSubtitle: 'From data to decisions in minutes',
+    description: 'Our proprietary NLP engine analyzes your data to surface non-obvious patterns, generate custom signals, and accelerate decision-making.',
+    additionalText: 'Turn weeks of analysis into minutes with AI-powered summaries, signal detection, and cross-reference analysis.',
+    type: 'feature-highlight',
+    mediaType: 'features',
+    features: [
+      { title: 'Smart Summaries', desc: 'Auto-generate executive summaries from any source' },
+      { title: 'Signal Detection', desc: 'Identify emerging trends and opportunities' },
+      { title: 'Cross-Reference', desc: 'Connect insights across entities and data' },
+    ],
+  },
+  {
+    id: 'ready',
+    title: 'You\'re Ready',
+    subtitle: 'to Start',
+    sectionSubtitle: 'Time to create value',
+    description: 'You now have everything you need to accelerate your research and decision-making with Able.',
+    additionalText: 'Explore resources and start building your first research project today.',
+    type: 'completion',
+    mediaType: 'completion',
+    nextSteps: [
+      'Create your first research project',
+      'Invite team members',
+      'Explore template library',
+      'Connect data sources',
+    ],
   },
 ];
 
 export const TutorialWalkthrough: React.FC<TutorialWalkthroughProps> = ({ isOpen, onClose }) => {
   const [stepIndex, setStepIndex] = useState(0);
+  const [selectedUseCase, setSelectedUseCase] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
   const goNext = () => setStepIndex((i) => Math.min(STEPS.length - 1, i + 1));
   const goBack = () => setStepIndex((i) => Math.max(0, i - 1));
-  const goTo = (i: number) => setStepIndex(i);
 
-  const step = STEPS[stepIndex];
+  const currentStepData = STEPS[stepIndex];
+
+  const renderMediaContent = () => {
+    switch (currentStepData.mediaType) {
+      case 'video':
+        return (
+          <div className="tw-media-content tw-media-video">
+            <img src={playIcon} alt="Play video" className="tw-play-button" />
+          </div>
+        );
+
+      case 'use-cases':
+        return (
+          <div className="tw-media-content tw-media-use-cases">
+            <div className="tw-use-cases-grid">
+              {currentStepData.useCases?.map((useCase) => {
+                const isSelected = selectedUseCase === useCase.id;
+                return (
+                  <button
+                    key={useCase.id}
+                    onClick={() => setSelectedUseCase(useCase.id)}
+                    className={`tw-use-case-card ${isSelected ? 'tw-use-case-card--selected' : ''}`}
+                    style={{ '--case-color': useCase.color } as React.CSSProperties}
+                  >
+                    <div className="tw-use-case-icon-wrapper">
+                      <img src={useCase.icon} alt="" className="tw-use-case-icon" />
+                    </div>
+                    <div className="tw-use-case-content">
+                      <h3 className="tw-use-case-title">{useCase.title}</h3>
+                      <p className="tw-use-case-desc">{useCase.desc}</p>
+                    </div>
+                    {isSelected && <img src={checkIcon} alt="Selected" className="tw-use-case-check" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        );
+
+      case 'templates':
+        return (
+          <div className="tw-media-content tw-media-templates">
+            <div className="tw-templates-container">
+              <button className="tw-new-research-button">
+                <img src={addIcon} alt="Add" className="tw-button-icon" />
+                New Research Project
+              </button>
+              <div className="tw-templates-list">
+                {currentStepData.templates?.map((template, idx) => (
+                  <button key={idx} className="tw-template-card">
+                    <div className="tw-template-content">
+                      <img src={listIcon} alt="" className="tw-template-icon" />
+                      <span className="tw-template-name">{template}</span>
+                    </div>
+                    <img src={chevronRightIcon} alt="" className="tw-chevron-icon" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'sources':
+        return (
+          <div className="tw-media-content tw-media-sources">
+            <div className="tw-sources-container">
+              {currentStepData.sources?.map((source, idx) => (
+                <div key={idx} className="tw-source-card">
+                  <div className="tw-source-content">
+                    <img src={workflowIcon} alt="" className="tw-source-icon" />
+                    <div className="tw-source-info">
+                      <h4 className="tw-source-name">{source.name}</h4>
+                      <p className="tw-source-type">{source.type}</p>
+                    </div>
+                  </div>
+                  {source.active && <img src={checkIcon} alt="Active" className="tw-source-check" />}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 'features':
+        return (
+          <div className="tw-media-content tw-media-features">
+            <div className="tw-features-container">
+              <div className="tw-features-icon-wrapper">
+                <img src={workflowIcon} alt="Features" className="tw-features-icon" />
+              </div>
+              <div className="tw-features-list">
+                {currentStepData.features?.map((feature, idx) => (
+                  <div key={idx} className="tw-feature-card">
+                    <h3 className="tw-feature-title">{feature.title}</h3>
+                    <p className="tw-feature-desc">{feature.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'completion':
+        return (
+          <div className="tw-media-content tw-media-completion">
+            <div className="tw-completion-container">
+              <div className="tw-completion-icon-wrapper">
+                <img src={checkIcon} alt="Complete" className="tw-completion-icon" />
+              </div>
+              <h2 className="tw-completion-title">You're All Set!</h2>
+              <p className="tw-completion-subtitle">Time to start researching</p>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="video-tutorial-overlay" onClick={onClose} role="dialog" aria-modal="true">
       <div className="video-tutorial-modal tutorial-walkthrough-modal" onClick={(e) => e.stopPropagation()}>
-
         <div className="video-tutorial__content">
           <div className="video-tutorial__header">
             <div className="video-tutorial__header-row">
-              <h2 className="video-tutorial__title">Welcome to Able</h2>
+              <div>
+                <h2 className="video-tutorial__title">Welcome to Able</h2>
+                <p className="video-tutorial__subtitle">{currentStepData.sectionSubtitle}</p>
+              </div>
               <button className="video-tutorial__close-inline" onClick={onClose} aria-label="Close tutorial">
-                <X size={24} />
+                <img src={closeIcon} alt="Close" className="video-tutorial__icon" />
               </button>
             </div>
-            <p className="video-tutorial__subtitle">Four simple steps to get productive</p>
           </div>
 
           <div className="video-tutorial__video-container">
             <div className="tw-body">
               <div className="tw-image">
+                {renderMediaContent()}
               </div>
               <div className="tw-text">
-                <h4 className="tw-step-title">{step.title}</h4>
-                <p className="tw-step-desc">{step.description}</p>
-                <button className="tw-read-more" onClick={() => window.open(step.ctaHref || '#', '_blank')}>Read more</button>
+                <div className="tw-progress-dots">
+                  {STEPS.map((_, idx) => (
+                    <div
+                      key={idx}
+                      className={`tw-progress-dot ${idx === stepIndex ? 'tw-progress-dot--active' : ''}`}
+                    />
+                  ))}
+                </div>
+
+                <h2 className="tw-step-title">
+                  {currentStepData.title}
+                  {currentStepData.subtitle && (
+                    <>
+                      <br />
+                      {currentStepData.subtitle}
+                    </>
+                  )}
+                </h2>
+
+                <div className="tw-step-content">
+                  <p>{currentStepData.description}</p>
+                  {currentStepData.additionalText && <p>{currentStepData.additionalText}</p>}
+                </div>
+
+                {currentStepData.type !== 'completion' && (
+                  <button className="tw-read-more">Read more</button>
+                )}
+
+                {currentStepData.type === 'completion' && currentStepData.nextSteps && (
+                  <div className="tw-next-steps">
+                    <p className="tw-next-steps-label">Next Steps</p>
+                    {currentStepData.nextSteps.map((step, idx) => (
+                      <div key={idx} className="tw-next-step-item">
+                        <span className="tw-next-step-bullet">•</span>
+                        {step}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
           <div className="video-tutorial__footer">
-            <button className="video-tutorial__skip-button" onClick={onClose}>Skip tutorial</button>
+            <button className="video-tutorial__skip-button" onClick={onClose}>
+              Skip tutorial
+            </button>
             <div className="video-tutorial__nav-buttons">
-              {stepIndex > 0 && (
-                <button className="video-tutorial__back-button" onClick={goBack}>
-                  Back
-                </button>
-              )}
-              <button className={`video-tutorial__start-button ${stepIndex === 0 ? 'video-tutorial__start-button--pulse' : ''}`} onClick={stepIndex === STEPS.length - 1 ? onClose : goNext}>
-                {stepIndex === STEPS.length - 1 ? 'Finish' : 'Next'}
+              <button
+                className="video-tutorial__back-button"
+                onClick={goBack}
+                disabled={stepIndex === 0}
+              >
+                Back
+              </button>
+              <button
+                className={`video-tutorial__start-button ${stepIndex === 0 ? 'video-tutorial__start-button--pulse' : ''}`}
+                onClick={stepIndex === STEPS.length - 1 ? onClose : goNext}
+              >
+                {stepIndex === STEPS.length - 1 ? 'Get started' : 'Next'}
               </button>
             </div>
           </div>

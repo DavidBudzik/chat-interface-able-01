@@ -250,7 +250,13 @@ export const TableSidebar: React.FC<TableSidebarProps> = ({ isOpen, onClose, isL
     };
     const onDocClick = (e: MouseEvent) => {
       const el = e.target as HTMLElement;
-      if (!el.closest?.('.table-sidebar__row-menu')) setRowMenu(null);
+      // Close menu if clicking outside both the menu and the trigger buttons
+      if (
+        !el.closest?.('.table-sidebar__row-menu') &&
+        !el.closest?.('.table-sidebar__hover-icon-button')
+      ) {
+        setRowMenu(null);
+      }
     };
     if (rowMenu) {
       document.addEventListener('keydown', onEsc);
@@ -662,49 +668,20 @@ export const TableSidebar: React.FC<TableSidebarProps> = ({ isOpen, onClose, isL
                           className="table-sidebar__hover-icon-button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            // Handle more options action
-                            const rect = (e.currentTarget as HTMLButtonElement).getBoundingClientRect();
-                            setRowMenu({ rowId: row.id, x: rect.left, y: rect.bottom + 6 });
+                            // Toggle menu - close if already open for this row, otherwise open
+                            if (rowMenu?.rowId === row.id) {
+                              setRowMenu(null);
+                            } else {
+                              const rect = (e.currentTarget as HTMLButtonElement).getBoundingClientRect();
+                              setRowMenu({ rowId: row.id, x: rect.left, y: rect.bottom + 6 });
+                            }
                           }}
                           aria-label={`More options for ${row.company.name}`}
+                          aria-expanded={rowMenu?.rowId === row.id}
                         >
                           <img src={moreOptionsIcon} alt="More options" className="table-sidebar__hover-icon" />
                         </button>
                       </div>
-                      {rowMenu?.rowId === row.id && (
-                        <div
-                          className="table-sidebar__row-menu"
-                          style={{ left: rowMenu.x, top: rowMenu.y }}
-                          role="menu"
-                          aria-label={`Row actions for ${row.company.name}`}
-                        >
-                          <button className="table-sidebar__row-menu-item" role="menuitem">
-                            <img src={websiteIcon} alt="Website" className="table-sidebar__row-menu-icon" />
-                            <span>Go to website</span>
-                          </button>
-                          <button className="table-sidebar__row-menu-item" role="menuitem">
-                            <img src={linkedinIcon} alt="LinkedIn" className="table-sidebar__row-menu-icon" />
-                            <span>Go to Linkedin</span>
-                          </button>
-                          <button className="table-sidebar__row-menu-item" role="menuitem">
-                            <img src={crunchbaseIcon} alt="Crunchbase" className="table-sidebar__row-menu-icon" />
-                            <span>Go to Crunchbase</span>
-                          </button>
-                          <div className="table-sidebar__row-menu-sep" />
-                          <button className="table-sidebar__row-menu-item" role="menuitem">
-                            <img src={deleteIconSmall} alt="Delete" className="table-sidebar__row-menu-icon" />
-                            <span>Delete</span>
-                          </button>
-                          <button className="table-sidebar__row-menu-item" role="menuitem">
-                            <img src={rerunIconSmall} alt="Rerun" className="table-sidebar__row-menu-icon" />
-                            <span>Rerun company info</span>
-                          </button>
-                          <button className="table-sidebar__row-menu-item" role="menuitem">
-                            <img src={rerunIconSmall} alt="Rerun all" className="table-sidebar__row-menu-icon" />
-                            <span>Rerun all companies info</span>
-                          </button>
-                        </div>
-                      )}
                     </div>
                   </div>
                   <div className="table-sidebar__table-cell table-sidebar__table-cell--w-260">
@@ -917,6 +894,84 @@ export const TableSidebar: React.FC<TableSidebarProps> = ({ isOpen, onClose, isL
         </>
         )}
       </div>
+
+      {/* Row Menu - rendered outside table structure to avoid stacking context issues */}
+      {rowMenu && (
+        <div
+          className="table-sidebar__row-menu"
+          style={{ left: rowMenu.x, top: rowMenu.y }}
+          role="menu"
+          aria-label="Row actions menu"
+        >
+          <button 
+            className="table-sidebar__row-menu-item" 
+            role="menuitem"
+            onClick={() => {
+              // TODO: Handle go to website
+              setRowMenu(null);
+            }}
+          >
+            <img src={websiteIcon} alt="Website" className="table-sidebar__row-menu-icon" />
+            <span>Go to website</span>
+          </button>
+          <button 
+            className="table-sidebar__row-menu-item" 
+            role="menuitem"
+            onClick={() => {
+              // TODO: Handle go to LinkedIn
+              setRowMenu(null);
+            }}
+          >
+            <img src={linkedinIcon} alt="LinkedIn" className="table-sidebar__row-menu-icon" />
+            <span>Go to Linkedin</span>
+          </button>
+          <button 
+            className="table-sidebar__row-menu-item" 
+            role="menuitem"
+            onClick={() => {
+              // TODO: Handle go to Crunchbase
+              setRowMenu(null);
+            }}
+          >
+            <img src={crunchbaseIcon} alt="Crunchbase" className="table-sidebar__row-menu-icon" />
+            <span>Go to Crunchbase</span>
+          </button>
+          <div className="table-sidebar__row-menu-sep" />
+          <button 
+            className="table-sidebar__row-menu-item" 
+            role="menuitem"
+            onClick={() => {
+              // TODO: Handle delete
+              setRowMenu(null);
+            }}
+          >
+            <img src={deleteIconSmall} alt="Delete" className="table-sidebar__row-menu-icon" />
+            <span>Delete</span>
+          </button>
+          <button 
+            className="table-sidebar__row-menu-item" 
+            role="menuitem"
+            onClick={() => {
+              // TODO: Handle rerun company info
+              setRowMenu(null);
+            }}
+          >
+            <img src={rerunIconSmall} alt="Rerun" className="table-sidebar__row-menu-icon" />
+            <span>Rerun company info</span>
+          </button>
+          <button 
+            className="table-sidebar__row-menu-item" 
+            role="menuitem"
+            onClick={() => {
+              // TODO: Handle rerun all companies info
+              setRowMenu(null);
+            }}
+          >
+            <img src={rerunIconSmall} alt="Rerun all" className="table-sidebar__row-menu-icon" />
+            <span>Rerun all companies info</span>
+          </button>
+        </div>
+      )}
 
       {/* Create New List Modal */}
       <CreateDialog
